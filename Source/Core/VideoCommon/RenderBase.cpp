@@ -274,19 +274,24 @@ void Renderer::RenderToXFB(u32 xfbAddr, const MathUtil::Rectangle<int>& sourceRc
     return;
 }
 
-unsigned int Renderer::GetEFBScale() const
+bool Renderer::IsUnscaled() const
 {
-  return m_efb_scale;
+  return m_efb_scale == 2;
+}
+
+float Renderer::GetEFBScalef() const
+{
+  return m_efb_scale / 2.0f;
 }
 
 int Renderer::EFBToScaledX(int x) const
 {
-  return x * static_cast<int>(m_efb_scale);
+  return x * static_cast<int>(m_efb_scale) / 2;
 }
 
 int Renderer::EFBToScaledY(int y) const
 {
-  return y * static_cast<int>(m_efb_scale);
+  return y * static_cast<int>(m_efb_scale) / 2;
 }
 
 float Renderer::EFBToScaledXf(float x) const
@@ -301,7 +306,7 @@ float Renderer::EFBToScaledYf(float y) const
 
 std::tuple<int, int> Renderer::CalculateTargetScale(int x, int y) const
 {
-  return std::make_tuple(x * static_cast<int>(m_efb_scale), y * static_cast<int>(m_efb_scale));
+  return std::make_tuple(x * static_cast<int>(m_efb_scale) / 2, y * static_cast<int>(m_efb_scale) / 2);
 }
 
 // return true if target size changed

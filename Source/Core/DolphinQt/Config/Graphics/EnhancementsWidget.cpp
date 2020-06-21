@@ -52,23 +52,33 @@ void EnhancementsWidget::CreateWidgets()
 
   // Only display the first 8 scales, which most users will not go beyond.
   QStringList resolution_options{
-      tr("Auto (Multiple of 640x528)"),      tr("Native (640x528)"),
-      tr("2x Native (1280x1056) for 720p"),  tr("3x Native (1920x1584) for 1080p"),
-      tr("4x Native (2560x2112) for 1440p"), tr("5x Native (3200x2640)"),
-      tr("6x Native (3840x3168) for 4K"),    tr("7x Native (4480x3696)"),
-      tr("8x Native (5120x4224) for 5K")};
+    tr("Auto (Multiple of 640x528)"),
+    tr("0.5x Native (320x264)"),
+    tr("Native (640x528)"),
+    tr("1.5x Native (960x792)"),
+    tr("2x Native (1280x1056) for 720p"),
+    tr("2.5x Native (1600x1320)"),
+    tr("3x Native (1920x1584) for 1080p"),
+    tr("3.5x Native (2240x1320)"),
+    tr("4x Native (2560x2112) for 1440p"),
+    tr("4.5x Native (2880x2376)"),
+    tr("5x Native (3200x2640)"),
+    tr("5.5x Native (3520x2904)"),
+    tr("6x Native (3840x3168) for 4K")
+  };
   const int visible_resolution_option_count = static_cast<int>(resolution_options.size());
 
   // If the current scale is greater than the max scale in the ini, add sufficient options so that
   // when the settings are saved we don't lose the user-modified value from the ini.
   const int max_efb_scale =
-      std::max(Config::Get(Config::GFX_EFB_SCALE), Config::Get(Config::GFX_MAX_EFB_SCALE));
+      2 * std::max(Config::Get(Config::GFX_EFB_SCALE), Config::Get(Config::GFX_MAX_EFB_SCALE));
   for (int scale = static_cast<int>(resolution_options.size()); scale <= max_efb_scale; scale++)
   {
+    const QString half_suffix = QString::fromUtf8(scale % 2 == 1 ? ".5" : "");
     resolution_options.append(tr("%1x Native (%2x%3)")
-                                  .arg(QString::number(scale),
-                                       QString::number(static_cast<int>(EFB_WIDTH) * scale),
-                                       QString::number(static_cast<int>(EFB_HEIGHT) * scale)));
+                                  .arg(QString::number(scale / 2).append(half_suffix),
+                                       QString::number(static_cast<int>(EFB_WIDTH) * scale / 2),
+                                       QString::number(static_cast<int>(EFB_HEIGHT) * scale / 2)));
   }
 
   m_ir_combo = new GraphicsChoice(resolution_options, Config::GFX_EFB_SCALE);

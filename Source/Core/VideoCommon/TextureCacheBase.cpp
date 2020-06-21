@@ -985,7 +985,7 @@ static void SetSamplerState(u32 index, float custom_tex_scale, bool custom_tex,
     // that have arbitrary contents, eg. are used for fog effects where the
     // distance they kick in at is important to preserve at any resolution.
     // Correct this with the upscaling factor of custom textures.
-    s64 lod_offset = std::log2(g_renderer->GetEFBScale() / custom_tex_scale) * 256.f;
+    s64 lod_offset = std::log2(g_renderer->GetEFBScalef() / custom_tex_scale) * (s64) 256.f;
     state.lod_bias = std::clamp<s64>(state.lod_bias + lod_offset, -32768, 32767);
 
     // Anisotropic also pushes mips farther away so it cannot be used either
@@ -2135,7 +2135,7 @@ void TextureCacheBase::CopyRenderTargetToTexture(
   // TODO: This only produces perfect downsampling for 2x IR, other resolutions will need more
   //       complex down filtering to average all pixels and produce the correct result.
   const bool linear_filter =
-      !is_depth_copy && (scaleByHalf || g_renderer->GetEFBScale() != 1 || y_scale > 1.0f);
+      !is_depth_copy && (scaleByHalf || g_renderer->IsUnscaled() || y_scale > 1.0f);
 
   TCacheEntry* entry = nullptr;
   if (copy_to_vram)

@@ -509,7 +509,7 @@ void FramebufferManager::DestroyReadbackPipelines()
 
 bool FramebufferManager::CreateReadbackFramebuffer()
 {
-  if (g_renderer->GetEFBScale() != 1)
+  if (g_renderer->IsUnscaled())
   {
     const TextureConfig color_config(IsUsingTiledEFBCache() ? m_efb_cache_tile_size : EFB_WIDTH,
                                      IsUsingTiledEFBCache() ? m_efb_cache_tile_size : EFB_HEIGHT, 1,
@@ -530,7 +530,7 @@ bool FramebufferManager::CreateReadbackFramebuffer()
       (IsUsingTiledEFBCache() && !g_ActiveConfig.backend_info.bSupportsPartialDepthCopies) ||
       !AbstractTexture::IsCompatibleDepthAndColorFormats(m_efb_depth_texture->GetFormat(),
                                                          GetEFBDepthCopyFormat()) ||
-      g_renderer->GetEFBScale() != 1)
+      g_renderer->IsUnscaled())
   {
     const TextureConfig depth_config(IsUsingTiledEFBCache() ? m_efb_cache_tile_size : EFB_WIDTH,
                                      IsUsingTiledEFBCache() ? m_efb_cache_tile_size : EFB_HEIGHT, 1,
@@ -602,7 +602,7 @@ void FramebufferManager::PopulateEFBCache(bool depth, u32 tile_index)
   const MathUtil::Rectangle<int> native_rect = g_renderer->ConvertEFBRectangle(rect);
   AbstractTexture* src_texture =
       depth ? ResolveEFBDepthTexture(native_rect) : ResolveEFBColorTexture(native_rect);
-  if (g_renderer->GetEFBScale() != 1 || force_intermediate_copy)
+  if (g_renderer->IsUnscaled() || force_intermediate_copy)
   {
     // Downsample from internal resolution to 1x.
     // TODO: This won't produce correct results at IRs above 2x. More samples are required.
@@ -781,7 +781,7 @@ void FramebufferManager::CreatePokeVertices(std::vector<EFBPokeVertex>* destinat
     // GPU will expand the point to a quad.
     const float cs_x = (static_cast<float>(x) + 0.5f) * cs_pixel_width - 1.0f;
     const float cs_y = 1.0f - (static_cast<float>(y) + 0.5f) * cs_pixel_height;
-    const float point_size = static_cast<float>(g_renderer->GetEFBScale());
+    const float point_size = g_renderer->GetEFBScalef();
     destination_list->push_back({{cs_x, cs_y, z, point_size}, color});
     return;
   }

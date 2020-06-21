@@ -188,7 +188,8 @@ public:
   std::tuple<MathUtil::Rectangle<int>, MathUtil::Rectangle<int>>
   ConvertStereoRectangle(const MathUtil::Rectangle<int>& rc) const;
 
-  unsigned int GetEFBScale() const;
+  bool IsUnscaled() const;
+  float GetEFBScalef() const;
 
   // Use this to upscale native EFB coordinates to IDEAL internal resolution
   int EFBToScaledX(int x) const;
@@ -342,7 +343,8 @@ private:
   std::tuple<int, int> CalculateOutputDimensions(int width, int height) const;
 
   PEControl::PixelFormat m_prev_efb_format = PEControl::INVALID_FMT;
-  unsigned int m_efb_scale = 1;
+  // Scale in steps of 0.5x. Value of 2 is scale of 1 (unscaled).
+  unsigned int m_efb_scale = 2;
 
   // These will be set on the first call to SetWindowSize.
   int m_last_window_request_width = 0;
